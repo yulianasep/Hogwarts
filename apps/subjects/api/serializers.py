@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from apps.subjects.models import Spell, Subject
+from apps.users.models import Teacher
 
 class SpellSerializer(serializers.ModelSerializer):
     class Meta:
@@ -14,18 +15,19 @@ class SpellSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         name_body = validated_data.get("name")
+        incantation = validated_data.get("incantation")
+        description = validated_data.get("description")
+
         new_spell= Spell.objects.create(
-            name=name_body
+            name=name_body,
+            incantation=incantation,
+            description=description
         )
         return new_spell
     
     def update(self, instance, validated_data):
         return super().update(instance, validated_data)
     
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        representation['subject'] = instance.subject.name
-        return representation
 
 class SubjectSerializer(serializers.ModelSerializer):
     class Meta:
@@ -33,14 +35,19 @@ class SubjectSerializer(serializers.ModelSerializer):
         fields = "__all__"
         labels = {
             "name": "Nombre",
-            "professor": "Profesor",
+            "teacher": "Teacher",
             "credits": "Créditos"
         }
 
     def create(self, validated_data):
         name_body = validated_data.get("name")
+        subject_credits = validated_data.get("credits")
+        teacher = Teacher.objects.first()
+
         new_subject= Subject.objects.create(
-            name=name_body
+            name=name_body,
+            teacher=teacher,
+            credits=subject_credits
         )
         return new_subject
     
@@ -49,7 +56,6 @@ class SubjectSerializer(serializers.ModelSerializer):
     
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation['professor'] = instance.professor.user.username
+        representation['teacher'] = instance.teacher.user.username
         return representation
     
-        
