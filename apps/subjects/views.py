@@ -4,15 +4,18 @@ from django.shortcuts import get_object_or_404
 
 from apps.subjects.api.serializers import SubjectSerializer, SpellSerializer
 from apps.subjects.models import Subject, Spell
+from rest_framework.permissions import IsAuthenticated
 
 class SubjectViewSet(viewsets.ModelViewSet):
     model = Subject
     serializer_class = SubjectSerializer
+    permission_classes = [IsAuthenticated]
     queryset = Subject.objects.all()
 
 class SpellViewSet(viewsets.ModelViewSet):
     model = Spell
     serializer_class = SpellSerializer
+    permission_classes = [IsAuthenticated]
     queryset = Spell.objects.all()
 
     def create(self, request, *args, **kwargs):
